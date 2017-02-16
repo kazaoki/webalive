@@ -1,5 +1,7 @@
 #!/bin/sh
 
+/usr/sbin/crond
+
 node /webalive.js
 
 while true
