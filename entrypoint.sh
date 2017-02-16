@@ -1,10 +1,5 @@
 #!/bin/sh
 
-/usr/sbin/crond
+/usr/local/bin/node /regist-to-cron.js | crontab -
 
-node /webalive.js
-
-while true
-do
-    sleep 60
-done
+/usr/sbin/crond -f
