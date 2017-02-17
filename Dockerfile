@@ -1,4 +1,4 @@
-FROM node:4.7-alpine
+FROM node:7.5-alpine
 
 COPY node_modules /node_modules/
 COPY webalive.js /webalive.js
