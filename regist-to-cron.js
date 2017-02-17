@@ -22,14 +22,28 @@ if(fs.existsSync(yaml_file))
 	}
 }
 
-// overwrite if exist envs.
-console.log(wa);
+// set from env
+var keys = Object.keys(process.env).sort();
+keys.forEach((key)=>{
+        var match = key.match(/^WA(\d+)_URL$/);
+        if(match && match[1]){
+                var set = new Object();
+                keys.forEach((in_key)=>{
+                        var in_match = in_key.match(new RegExp('^WA'+match[1]+'_(.+)$'));
+                        if(in_match && in_match[1])
+                        {
+                                set[in_match[1].toLowerCase()] = process.env[in_key];
+                        }
+                });
+                wa[process.env[key]] = set;
+        }
+});
 
-
-// // output by format of cron.
-// wa.forEach(function(item){
-// 	var timing = item.timing;
-// 	delete item.timing;
-// 	var json_string = JSON.stringify(item);
-// 	console.log('%s /usr/local/bin/node /webalive.js "%s"', timing, json_string.replace(/\"/g,'\\"'));
-// });
+// output by format of cron.
+Object.keys(wa).forEach(function(key){
+  var item = wa[key];
+	var timing = item.timing;
+	delete item.timing;
+	var json_string = JSON.stringify(item);
+	console.log('%s /usr/local/bin/node /webalive.js "%s"', timing, json_string.replace(/\"/g,'\\"'));
+});
