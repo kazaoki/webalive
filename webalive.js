@@ -6,7 +6,6 @@ var book = new Array();
 
 // parse data
 var wa = JSON.parse(process.argv[2]);
-// console.log(wa);
 
 // access to web
 if(wa && wa.url) access_url(wa.url);
@@ -19,7 +18,7 @@ function access_url(url)
 		if(res.statusCode.toString().match(/^2/))
 		{
 			// ok notice if always "yes".
-			notice_ok(wa);
+			if(wa.always == 'yes') notice_ok(wa);
 			process.exit(0);
 		} else {
 			if(res.headers['location'])
@@ -40,11 +39,48 @@ function access_url(url)
 }
 
 // ok notice
-function notice_ok(){
+function notice_ok(wa){
 	console.log('OK');
+	if(wa.email)
+	{
+		send_email({
+			;
+		});
+	}
+	if(wa.slack)
+	{
+		send_slack({
+			;
+		});
+	}
 }
 
 // ng notice
-function notice_ng(){
+function notice_ng(wa){
 	console.log('NG!');
+	if(wa.email)
+	{
+		send_email({
+			;
+		});
+	}
+	if(wa.slack)
+	{
+		send_slack({
+			;
+		});
+	}
+}
+
+// send email
+function send_email(set)
+{
+	console.log('  send to email.');
+	;
+}
+
+// send slack
+function send_slack(set)
+{
+	console.log('  send to slack.');
 }
