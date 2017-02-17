@@ -1,0 +1,36 @@
+version: '2'
+services:
+
+  # # YAML file sample
+  # # ------------------------------------------------------------------
+  # webalive_by_yaml:
+  #   container_name: webalive
+  #   image: kazaoki/webalive
+  #   restart: always
+  #   volumes:
+  #     - ./webalive.yml:/etc/webalive.yml
+
+  # Environment sample
+  # ------------------------------------------------------------------
+  webalive_by_env:
+    container_name: webalive
+    image: kazaoki/webalive
+    restart: always
+    environment:
+      # [web site 1]
+      - WA1_URL="https://google.com"
+      - WA1_TIMING="0 * * * *"
+      - WA1_EMAIL="notice@xxx.xx"
+      - WA1_SLACK="https://slack_web_hook_url"
+      - WA1_ALWAYS="no"
+      # [web site 2]
+      - WA2_URL="https://hugehuge.com/"
+      - WA2_TIMING="0 1 * * *"
+      - WA2_EMAIL="notice@xxx.xx"
+      - WA2_ALWAYS="yes"
+      # [web site 3]
+      - WA3_URL="https://yahoo.jp/"
+      - WA3_TIMING="0 1 * * *"
+      - WA3_SLACK="https://slack_web_hook_url"
+      - WA3_SUBJECT="日本語サブジェクト"
+      - WA3_ALWAYS="no"
