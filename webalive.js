@@ -78,8 +78,12 @@ function notice_ng(wa, res){
 // send email
 function send_email(set)
 {
-	var transport = nodemailer.createTransport();
-	transport.sendMail(set);
+	var transporter = nodemailer.createTransport({
+		sendmail: true,
+		newline: 'unix',
+		path: '/usr/sbin/sendmail'
+	});
+	transporter.sendMail(set);
 	console.log('  sent email.');
 }
 
