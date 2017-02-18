@@ -1,8 +1,10 @@
+'use strict';
 
 // load modules
-var http  = require('http');
-var https = require('https');
-var nodemailer = require('nodemailer');
+const url = require('url');
+const http  = require('http');
+const https = require('https');
+const nodemailer = require('nodemailer');
 var book = new Array();
 
 // parse data
@@ -48,9 +50,10 @@ function notice_ok(wa, res){
 	}
 	if(wa.slack)
 	{
-		// send_slack({
-		// 	;
-		// });
+		send_slack({
+			webhook: wa.slack,
+			text: '*webalive notice [NG]*'+"\n"+wa.url+' - response code: '+res.statusCode.toString(),
+		});
 	}
 }
 
@@ -68,16 +71,18 @@ function notice_ng(wa, res){
 	}
 	if(wa.slack)
 	{
-		// send_slack({
-		// 	;
-		// });
+		send_slack({
+			webhook: wa.slack,
+			text: '*webalive notice [NG]*'+"\n"+wa.url+' - response code: '+res.statusCode.toString(),
+		});
 	}
 }
 
 // send email
 function send_email(set)
 {
-	var transporter = nodemailer.createTransport({
+	console.log('--- send by email ---');
+	let transporter = nodemailer.createTransport({
 		sendmail: true,
 		newline: 'unix',
 		path: '/usr/sbin/sendmail',
@@ -87,11 +92,35 @@ function send_email(set)
 	    console.log(info.messageId);
 	});
 	console.log(set);
-	console.log('  sent email.');
 }
 
 // send slack
 function send_slack(set)
 {
-	console.log('  sent slack.');
+	console.log('--- send by slack ---');
+	let json_data = JSON.stringify({text: set.text});
+	let webhook = url.parse(set.webhook, true);
+	let options = {
+	    host: webhook.host,
+	    path: webhook.path,
+	    method: 'POST',
+	    headers: {
+	        'Content-Type': 'application/json',
+	        'Content-Length': json_data.length
+	    }
+	};
+	let req = (set.webhook.match(/^https/) ? https : http).request(options, (res) => {
+	  console.log('STATUS: ' + res.statusCode);
+	  console.log('HEADERS: ' + JSON.stringify(res.headers));
+	  res.setEncoding('utf8');
+	  res.on('data', (chunk) => {
+	    console.log('BODY: ' + chunk);
+	  });
+	});
+	req.on('error', (e) => {
+	  console.log('problem with request: ' + e.message);
+	});
+	req.write(json_data);
+	req.end();
+	console.log(set);
 }
