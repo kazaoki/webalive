@@ -20,7 +20,6 @@ function access_url(url)
 		{
 			// ok notice if always "yes".
 			if(wa.always == 'yes') notice_ok(wa, res);
-			process.exit(0);
 		} else {
 			if(res.headers['location'])
 			{
@@ -28,14 +27,11 @@ function access_url(url)
 			} else {
 				console.error('URL('+url+') response code: '+res.statusCode.toString());
 				notice_ng(wa, res);
-				process.exit(2);
 			}
 		}
 	}).on('error', (e)=>{
 		console.error('URL('+url+') Got error: ' + e.message);
-		process.exit(1);
 	});
-	return;
 }
 
 // ok notice
@@ -43,9 +39,12 @@ function notice_ok(wa, res){
 	console.log('OK');
 	if(wa.email)
 	{
-		// send_email({
-		// 	;
-		// });
+		send_email({
+			from: wa.email,
+			to: wa.email,
+			subject: wa.subject || 'webalive notice [OK] '+wa.url,
+			text: wa.url+"\n"+'  - response code: '+res.statusCode.toString(),
+		});
 	}
 	if(wa.slack)
 	{
@@ -61,10 +60,10 @@ function notice_ng(wa, res){
 	if(wa.email)
 	{
 		send_email({
-			from : 'admin',
-			to   : wa.email,
-			subject : wa.subject || 'webalive notice [NG] '+wa.url,
-			text :  'URL('+wa.url+') response code: '+res.statusCode.toString()
+			from: wa.email,
+			to: wa.email,
+			subject: wa.subject || 'webalive notice [NG] '+wa.url,
+			text: wa.url+"\n"+'  - response code: '+res.statusCode.toString(),
 		});
 	}
 	if(wa.slack)
@@ -81,9 +80,13 @@ function send_email(set)
 	var transporter = nodemailer.createTransport({
 		sendmail: true,
 		newline: 'unix',
-		path: '/usr/sbin/sendmail'
+		path: '/usr/sbin/sendmail',
 	});
-	transporter.sendMail(set);
+	transporter.sendMail(set, (err, info) => {
+	    console.log(info.envelope);
+	    console.log(info.messageId);
+	});
+	console.log(set);
 	console.log('  sent email.');
 }
 

@@ -45,5 +45,5 @@ Object.keys(wa).forEach(function(key){
 	var timing = item.timing;
 	delete item.timing;
 	var json_string = JSON.stringify(item);
-	console.log('%s /usr/local/bin/node /webalive.js "%s"', timing, json_string.replace(/\"/g,'\\"'));
+	console.log('%s node /webalive "%s"', timing, json_string.replace(/\"/g,'\\"'));
 });

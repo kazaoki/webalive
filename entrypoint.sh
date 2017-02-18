@@ -1,5 +1,7 @@
 #!/bin/sh
 
-/usr/local/bin/node /regist-to-cron.js | crontab -
+node /regist-to-cron | crontab -
+
+postfix start
 
 /usr/sbin/crond -f
