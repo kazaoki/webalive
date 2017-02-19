@@ -6,8 +6,8 @@
 
 ウェブサイトの死活監視に使えそうな docker イメージです。
 
-指定したURLに、指定したタイミングでアクセスし、アクセス不能の場合（20x, 30x以外）に指定した方法（メールかslack）で通知を行うだけのものです。
-シンプルですが、複数のウェブサイトが指定でき、EメールだけでなくSlackにも通知可能なので、大規模なサイト監視でなければ、それなりに有用かと思います。
+指定したURLに、指定したタイミングでアクセスし、アクセス不能の場合（20x, 30x以外）に、指定した方法で通知を行うだけのものです。
+シンプルですが、複数のウェブサイトが指定でき、EメールだけでなくSlackにも通知可能なので、大規模なウェブ監視でなければ、それなりに有用かと思います。
 
 
 
@@ -21,14 +21,14 @@ ymlファイルはコンテナ内の `/etc/webalive.yml` に配置してくだ�
 # webalive.yml
 # [hogehoge]
 - url: https://hogehoge.com/
-  timing: 0 * * * *
+  timing: "0 * * * *"
   email: notice@xxx.xx
   slack: https://slack_web_hook_url
   always: no
 
 # [hugehuge]
 - url: https://hugehuge.com/
-  timing: 0 1 * * *
+  timing: "0 1 * * *"
   email: notice@xxx.xx
   always: yes 
 ```
@@ -61,7 +61,7 @@ docker run -d \
 
 ####  docker-compose ファイル
 `docker-compose` を使うとこんな感じです。
-```
+```yaml
 # docker-compose.yml
 version: '2'
 services:
