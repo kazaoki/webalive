@@ -2,15 +2,19 @@
 
 
 
-## 説明
+## 概要
 
 ウェブサイトの死活監視に使えそうな docker イメージです。
 
+指定したURLに、指定したタイミングでアクセスし、指定した方法（メールかslack）で通知を行うだけのものですが、複数のウェブサイト指定できるので、それなりに有用かと思います。
 
 
-## 概要
+
+## 設定の方法
 
 #### ymlファイルで指定
+
+ymlファイルはコンテナ内の `/etc/webalive.yml` に配置してください。
 
 ```yaml
 # webalive.yml
@@ -28,12 +32,15 @@
   always: yes 
 ```
 ```sh
+# dockerコマンド例
 docker run -d -v webalive.yml:/etc/webalive.yml kazaoki/webalive
 ```
 
 
 
 #### 環境変数でがんばって指定
+
+環境変数で複数のウェブを指定したい場合は、`WA1～` `WA2～` のように数値をつけてください。
 
 ```sh
 docker run -d \
@@ -51,8 +58,47 @@ docker run -d \
 
 環境変数とymlファイルの両方が指定されている場合は、URLをキーに環境変数を優先にマージします。
 
-`docker-compose` を使うと楽かもですね。
+####  docker-compose ファイル
+`docker-compose` を使うとこんな感じです。
+```
+# docker-compose.yml
+version: '2'
+services:
 
+  # ymlファイルでの指定
+  # ------------------------------------------------------------------
+  webalive_by_yaml:
+    container_name: webalive
+    image: kazaoki/webalive
+    restart: always
+    volumes:
+      - ./webalive.yml:/etc/webalive.yml
+
+  # # 環境変数での指定
+  # # ------------------------------------------------------------------
+  # webalive_by_env:
+  #   container_name: webalive
+  #   image: kazaoki/webalive
+  #   restart: always
+  #   environment:
+  #     # [web site 1]
+  #     - WA1_URL="https://google.com"
+  #     - WA1_TIMING="0 * * * *"
+  #     - WA1_EMAIL="notice@xxx.xx"
+  #     - WA1_SLACK="https://slack_web_hook_url"
+  #     - WA1_ALWAYS="no"
+  #     # [web site 2]
+  #     - WA2_URL="https://hugehuge.com/"
+  #     - WA2_TIMING="0 1 * * *"
+  #     - WA2_EMAIL="notice@xxx.xx"
+  #     - WA2_ALWAYS="yes"
+  #     # [web site 3]
+  #     - WA3_URL="https://yahoo.jp/"
+  #     - WA3_TIMING="0 1 * * *"
+  #     - WA3_SLACK="https://slack_web_hook_url"
+  #     - WA3_SUBJECT="日本語サブジェクト"
+  #     - WA3_ALWAYS="no"
+```
 
 
 ## 詳細
@@ -61,18 +107,15 @@ docker run -d \
 | --------- | ------------- | ----------------------------------- |
 | `url`     | `WA1_URL`     | 必須。監視するURLです。httpでもhttpsでもOKです。     |
 | `timing`  | `WA1_TIMING`  | 必須。cronフォーマットで指定してください。             |
-| `email`   | `WA1_EMAIL`   | 通知先メールアドレスです。                       |
-| `slack`   | `WA1_SLACK`   | ウェブフックを利用してSlackに通知できます。            |
+| `email`   | `WA1_EMAIL`   | 任意。通知先メールアドレスです。                    |
+| `slack`   | `WA1_SLACK`   | 任意。ウェブフックを利用してSlackに通知できます。         |
 | `subject` | `WA1_SUBJECT` | 通知する件名を自分で決めたい時に指定します。日本語使えるといいですね。 |
 | `always`  | `WA1_ALWAYS`  | `yes` か `no` が書けます。省略時は `no` です。    |
 
 `WA1～` は、複数ウェブサイトがある場合は数値を変えて下さい。
 
-同じ数値（変数名）があると上書きされてしまいます。
-
 
 
 ## 注意点
 
-- 現状、通知の本文は変更出来ません。いじりたい場合はこのプロジェクトをフォークして下さい。
-- Eメール/Slack以外の通知対応は今のところ考えていません。
+- Eメールはsendmailでの送信（FromもToも同じ）にしているので、もっと細かく指定したいとか、SMTP指定したいとか本文いじりたいとかは、現状では対応してません。
