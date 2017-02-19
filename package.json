@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "js-yaml": "^3.8.1",
+    "nodemailer": "^3.1.3"
+  }
+}

@@ -1,0 +1,16 @@
+# # [web site 1]
+# - url: https://google.com/
+#   timing: "0 * * * *"
+#   email: notice@xxx.xx
+#   slack: https://slack_web_hook_url
+
+# # [web site 2]
+# - url: https://hugehuge.com/
+#   timing: "0 1 * * *"
+#   email: notice@xxx.xx
+
+# # [web site 3]
+# - url: https://kazaoki.jp/s
+#   timing: "*/1 * * * *"
+#   email: notice@xxx.xx
+#   subject: 日本語サブジェクト

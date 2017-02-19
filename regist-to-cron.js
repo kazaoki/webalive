@@ -1,0 +1,49 @@
+
+// Initialize
+var yaml      = require('js-yaml');
+var fs        = require('fs');
+var yaml_file = '/etc/webalive.yml';
+var wa        = new Object();
+
+// load yaml file if exist.
+if(fs.existsSync(yaml_file))
+{
+	try {
+		list = yaml.safeLoad(fs.readFileSync(yaml_file, 'utf8'));
+		list.forEach(function(item)
+		{
+			if(item.url)
+			{
+				wa[item.url] = item;
+			}
+		});
+	} catch (e) {
+		console.error(e);
+	}
+}
+
+// set from env
+var keys = Object.keys(process.env).sort();
+keys.forEach((key)=>{
+        var match = key.match(/^WA(\d+)_URL$/);
+        if(match && match[1]){
+                var set = new Object();
+                keys.forEach((in_key)=>{
+                        var in_match = in_key.match(new RegExp('^WA'+match[1]+'_(.+)$'));
+                        if(in_match && in_match[1])
+                        {
+                                set[in_match[1].toLowerCase()] = process.env[in_key];
+                        }
+                });
+                wa[process.env[key]] = set;
+        }
+});
+
+// output by format of cron.
+Object.keys(wa).forEach(function(key){
+  var item = wa[key];
+	var timing = item.timing;
+	delete item.timing;
+	var json_string = JSON.stringify(item);
+	console.log('%s node /webalive "%s"', timing, json_string.replace(/\"/g,'\\"'));
+});
