@@ -5,10 +5,10 @@ const url = require('url');
 const http  = require('http');
 const https = require('https');
 const nodemailer = require('nodemailer');
-var book = new Array();
+let book = [];
 
 // parse data
-var wa = JSON.parse(process.argv[2]);
+let wa = JSON.parse(process.argv[2]);
 
 // access to web
 if(wa && wa.url) access_url(wa.url);
@@ -27,12 +27,13 @@ function access_url(url)
 			{
 				access_url(res.headers['location']);
 			} else {
-				console.error('URL('+url+') response code: '+res.statusCode.toString());
+				console.error(`URL(${url}) response code: `+res.statusCode.toString());
+
 				notice_ng(wa, res);
 			}
 		}
 	}).on('error', (e)=>{
-		console.error('URL('+url+') Got error: ' + e.message);
+		console.error(`URL(${url}) Got error: ` + e.message);
 	});
 }
 
