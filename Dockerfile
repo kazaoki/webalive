@@ -8,6 +8,6 @@ COPY webalive.js /webalive.js
 COPY regist-to-cron.js /regist-to-cron.js
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN yarn install
+RUN npm install
 
 ENTRYPOINT ["/entrypoint.sh"]
