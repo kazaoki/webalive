@@ -21,24 +21,24 @@ function access_url(url)
 		if(res.statusCode.toString().match(/^2/))
 		{
 			// ok notice if always "yes".
-			if(wa.always == 'yes') notice_ok(wa, res);
+			if(wa.always == 'yes') notice_ok(wa, wa.url+"\n"+'  - response code: '+res.statusCode.toString());
 		} else {
 			if(res.headers['location'])
 			{
 				access_url(res.headers['location']);
 			} else {
 				console.error(`URL(${url}) response code: `+res.statusCode.toString());
-
-				notice_ng(wa, res);
+				notice_ng(wa, '  - response code: '+res.statusCode.toString());
 			}
 		}
 	}).on('error', (e)=>{
-		console.error(`URL(${url}) Got error: ` + e.message);
+		console.error(`URL(${url}) Got error: `+e.message);
+		notice_ng(wa, '  - Got error: '+e.message);
 	});
 }
 
 // ok notice
-function notice_ok(wa, res){
+function notice_ok(wa, message){
 	console.log('OK');
 	if(wa.email)
 	{
@@ -46,20 +46,20 @@ function notice_ok(wa, res){
 			from: wa.email,
 			to: wa.email,
 			subject: wa.subject || 'webalive notice [OK] '+wa.url,
-			text: wa.url+"\n"+'  - response code: '+res.statusCode.toString(),
+			text: message,
 		});
 	}
 	if(wa.slack)
 	{
 		send_slack({
 			webhook: wa.slack,
-			text: '*webalive notice [NG]*'+"\n"+wa.url+' - response code: '+res.statusCode.toString(),
+			text: '*webalive notice [OK]*'+"\n"+message,
 		});
 	}
 }
 
 // ng notice
-function notice_ng(wa, res){
+function notice_ng(wa, message){
 	console.log('NG!');
 	if(wa.email)
 	{
@@ -67,14 +67,14 @@ function notice_ng(wa, res){
 			from: wa.email,
 			to: wa.email,
 			subject: wa.subject || 'webalive notice [NG] '+wa.url,
-			text: wa.url+"\n"+'  - response code: '+res.statusCode.toString(),
+			text: wa.url+"\n"+message,
 		});
 	}
 	if(wa.slack)
 	{
 		send_slack({
 			webhook: wa.slack,
-			text: '*webalive notice [NG]*'+"\n"+wa.url+' - response code: '+res.statusCode.toString(),
+			text: '*webalive notice [NG]*'+"\n"+wa.url+message,
 		});
 	}
 }
@@ -111,15 +111,15 @@ function send_slack(set)
 	    }
 	};
 	let req = (set.webhook.match(/^https/) ? https : http).request(options, (res) => {
-	  console.log('STATUS: ' + res.statusCode);
-	  console.log('HEADERS: ' + JSON.stringify(res.headers));
+	  console.log('STATUS: '+res.statusCode);
+	  console.log('HEADERS: '+JSON.stringify(res.headers));
 	  res.setEncoding('utf8');
 	  res.on('data', (chunk) => {
-	    console.log('BODY: ' + chunk);
+	    console.log('BODY: '+chunk);
 	  });
 	});
 	req.on('error', (e) => {
-	  console.log('problem with request: ' + e.message);
+	  console.log('problem with request: '+e.message);
 	});
 	req.write(json_data);
 	req.end();
